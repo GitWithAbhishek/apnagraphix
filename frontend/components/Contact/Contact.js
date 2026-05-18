@@ -125,9 +125,9 @@ export default function Contact() {
 
     try {
         const res = await axios.post(
-        'http://localhost:5000/api/contact',
-        form
-      );
+  `${process.env.NEXT_PUBLIC_API_URL}/api/contact`,
+  form
+);
 
       if (res.data.success) {
         toast.success("🎉 Message sent! We'll get back to you shortly.");
