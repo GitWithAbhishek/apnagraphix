@@ -43,7 +43,7 @@ const createContact = async (req, res) => {
       `
     });
 
-    await sendEmail({
+    sendEmail({
 
       to: email,
 
