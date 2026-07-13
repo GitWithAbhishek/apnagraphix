@@ -22,31 +22,12 @@ const transporter = nodemailer.createTransport({
   },
 
   connectionTimeout: 30000,
-
-  greetingTimeout: 30000,
-
   socketTimeout: 30000
 
 });
 
 
-transporter.verify((error) => {
-
-  if (error) {
-
-    console.log("SMTP VERIFY ERROR");
-    console.log(error);
-
-  } else {
-
-    console.log("GMAIL SMTP READY");
-
-  }
-
-});
-
-
-const sendEmail = async ({ to, subject, html }) => {
+const sendEmail = async ({to, subject, html}) => {
 
   try {
 
@@ -77,7 +58,7 @@ const sendEmail = async ({ to, subject, html }) => {
 
   } catch(error) {
 
-    console.log("EMAIL SEND ERROR");
+    console.log("EMAIL ERROR");
     console.log(error);
 
     return false;
