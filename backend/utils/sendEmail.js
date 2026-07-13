@@ -9,13 +9,32 @@ const transporter = nodemailer.createTransport({
 
   port: 587,
 
-  secure: false,
-
-  requireTLS: true,
+  secure: false, // IMPORTANT: false for port 587
 
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
+  },
+
+  tls: {
+    rejectUnauthorized: false
+  }
+
+});
+
+
+// Test SMTP connection when server starts
+transporter.verify((error, success) => {
+
+  if (error) {
+
+    console.log("SMTP CONNECTION ERROR");
+    console.log(error);
+
+  } else {
+
+    console.log("SMTP SERVER READY");
+
   }
 
 });
@@ -25,29 +44,33 @@ const sendEmail = async ({ to, subject, html }) => {
 
   try {
 
-    const info = await transporter.sendMail({
+    const mail = await transporter.sendMail({
 
       from: `"ApnaGraphix" <${process.env.EMAIL_USER}>`,
 
-      to,
+      to: to,
 
-      subject,
+      subject: subject,
 
-      html
+      html: html
 
     });
 
 
     console.log("EMAIL SENT SUCCESSFULLY");
-    console.log(info.messageId);
+    console.log(mail.response);
+
+
+    return true;
 
 
   } catch (error) {
 
-    console.log("EMAIL ERROR");
+    console.log("EMAIL SEND ERROR");
     console.log(error);
 
-    throw error;   // important
+
+    return false;
 
   }
 
