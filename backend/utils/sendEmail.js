@@ -3,8 +3,6 @@ require("dotenv").config();
 const nodemailer = require("nodemailer");
 const dns = require("dns");
 
-
-// Force IPv4
 dns.setDefaultResultOrder("ipv4first");
 
 
@@ -12,9 +10,9 @@ const transporter = nodemailer.createTransport({
 
   host: "smtp.gmail.com",
 
-  port: 587,
+  port: 465,
 
-  secure: false,
+  secure: true,
 
   family: 4,
 
@@ -23,11 +21,11 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS
   },
 
-  connectionTimeout: 10000,
+  connectionTimeout: 30000,
 
-  greetingTimeout: 10000,
+  greetingTimeout: 30000,
 
-  socketTimeout: 10000
+  socketTimeout: 30000
 
 });
 
@@ -36,12 +34,12 @@ transporter.verify((error) => {
 
   if (error) {
 
-    console.log("SMTP ERROR");
+    console.log("SMTP VERIFY ERROR");
     console.log(error);
 
   } else {
 
-    console.log("SMTP READY");
+    console.log("GMAIL SMTP READY");
 
   }
 
@@ -52,7 +50,7 @@ const sendEmail = async ({ to, subject, html }) => {
 
   try {
 
-    await transporter.sendMail({
+    const info = await transporter.sendMail({
 
       from: `"ApnaGraphix" <${process.env.EMAIL_USER}>`,
 
@@ -65,12 +63,19 @@ const sendEmail = async ({ to, subject, html }) => {
     });
 
 
-    console.log("EMAIL SENT");
+    console.log("EMAIL SENT SUCCESSFULLY");
+
+    console.log({
+      accepted: info.accepted,
+      rejected: info.rejected,
+      response: info.response
+    });
+
 
     return true;
 
 
-  } catch (error) {
+  } catch(error) {
 
     console.log("EMAIL SEND ERROR");
     console.log(error);
