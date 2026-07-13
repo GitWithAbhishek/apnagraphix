@@ -10,7 +10,11 @@ dotenv.config();
 const app = express();
 
 
-// CORS
+// MongoDB
+connectDB();
+
+
+// CORS FIX
 const allowedOrigins = [
   "http://localhost:3000",
   "https://apnagraphix.vercel.app",
@@ -18,42 +22,43 @@ const allowedOrigins = [
   "https://www.apnagraphix.com"
 ];
 
+
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin) {
-        return callback(null, true);
+    origin: function(origin, callback){
+
+      // allow Postman / server requests
+      if(!origin){
+        return callback(null,true);
       }
 
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
+      if(allowedOrigins.includes(origin)){
+        return callback(null,true);
       }
 
-      return callback(null, false);
+      return callback(new Error("Not allowed by CORS"));
     },
-    credentials: true,
-    methods: [
+    methods:[
       "GET",
       "POST",
       "PUT",
-      "PATCH",
       "DELETE",
       "OPTIONS"
     ],
-    allowedHeaders: [
+    allowedHeaders:[
       "Content-Type",
       "Authorization"
-    ]
+    ],
+    credentials:true
   })
 );
 
 
-// Body parser
+// IMPORTANT FOR PREFLIGHT
+app.options(/.*/, cors());
+
+
 app.use(express.json());
-
-
-// Database
-connectDB();
 
 
 // Routes
@@ -61,22 +66,23 @@ app.use("/api/contact", contactRoutes);
 
 
 // Test routes
-app.get("/", (req, res) => {
-  res.send("Backend is running...");
+app.get("/",(req,res)=>{
+    res.send("Backend is running");
 });
 
 
-app.get("/api/health", (req, res) => {
-  res.json({
-    success: true,
-    message: "API is working"
-  });
+app.get("/api/health",(req,res)=>{
+    res.json({
+        success:true,
+        message:"API working"
+    });
 });
 
 
-// Server
+
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+
+app.listen(PORT,()=>{
+    console.log(`Server running on port ${PORT}`);
 });
