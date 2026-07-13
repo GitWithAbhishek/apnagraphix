@@ -10,9 +10,7 @@ dotenv.config();
 const app = express();
 
 
-// ===============================
-// CORS CONFIGURATION
-// ===============================
+// CORS
 const allowedOrigins = [
   "http://localhost:3000",
   "https://apnagraphix.vercel.app",
@@ -23,9 +21,6 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
-
-      // Allow requests without origin
-      // (Postman, server-to-server requests)
       if (!origin) {
         return callback(null, true);
       }
@@ -34,9 +29,7 @@ app.use(
         return callback(null, true);
       }
 
-      return callback(
-        new Error("Not allowed by CORS")
-      );
+      return callback(null, false);
     },
     credentials: true,
     methods: [
@@ -55,31 +48,19 @@ app.use(
 );
 
 
-// Handle browser preflight requests
-app.options("*", cors());
-
-
-// ===============================
-// MIDDLEWARE
-// ===============================
+// Body parser
 app.use(express.json());
 
 
-// ===============================
-// DATABASE CONNECTION
-// ===============================
+// Database
 connectDB();
 
 
-// ===============================
-// ROUTES
-// ===============================
+// Routes
 app.use("/api/contact", contactRoutes);
 
 
-// ===============================
-// HEALTH CHECK
-// ===============================
+// Test routes
 app.get("/", (req, res) => {
   res.send("Backend is running...");
 });
@@ -93,54 +74,9 @@ app.get("/api/health", (req, res) => {
 });
 
 
-// ===============================
-// SERVER START
-// ===============================
+// Server
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
-
-
-
-/*const express = require("express");
-const cors = require("cors");
-const dotenv = require("dotenv");
-
-const connectDB = require("./config/db");
-const contactRoutes = require("./routes/contactRoutes");
-
-dotenv.config();
-connectDB();
-
-const app = express();
-
-app.use(
-  cors({
-    origin: [
-      "http://localhost:3000",
-      "https://apnagraphix.vercel.app"
-    ],
-    credentials: true
-  })
-);
-app.use(express.json());
-app.use("/api/contact", contactRoutes);
-app.get("/", (req, res) => {
-  res.send("Backend is running...");
-});
-
-app.get("/api/health", (req, res) => {
-  res.json({
-    success: true,
-    message: "API is working"
-  });
-});
-
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});*/
